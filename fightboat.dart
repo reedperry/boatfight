@@ -15,39 +15,90 @@ const rows = {
 
 const columnCount = 10;
 
+class Boat {
+  List<Coords> locations;
+  List<Coords> hits;
+
+  bool isSunk() {
+    return this.locations.length == this.hits.length;
+  }
+}
+
+class Coords {
+  int row, col;
+
+  Coords(row, col) {
+    this.row = row;
+    this.col = col;
+  }
+
+  @override
+  String toString() {
+    return '[${this.row}, ${this.col}]';
+  }
+}
+
+class BoardOverlay {
+  List<List<bool>> spaces;
+
+  BoardOverlay(List<Coords> spaces) {
+    var row = List.filled(10, false);
+    var grid = List<List<bool>>(10);
+    for (var i = 0; i < rows.keys.length; i++) {
+      grid[i] = List.from(row);
+    }
+
+    for (var space in spaces) {
+      grid[space.row][space.col] = true;
+    }
+
+    this.spaces = grid;
+  }
+}
+
 void main(List<String> args) {
   exitCode = 0;
   print('--- FIGHTBOAT ---');
 
-  stdout.writeln("Your move:");
+  // Parsing multiple inputs during dev
+  stdout.writeln("Your move(s):");
   String space = stdin.readLineSync();
-  stdout.writeln('You fired at ' + convertToCoords(space).toString());
-  printBoard();
+  List<String> spaces = space.split(RegExp(r'\s+'));
+  List<Coords> firedAt = spaces.map((s) => convertToCoords(s)).toList();
+  var attacks = BoardOverlay(firedAt);
+  printBoard(attacks);
 }
 
 /**
  * Convert user coordinates input into 0-based numerical indices
  * e.g. 'A4' => '[0, 3]' and 'F10' => '[5, 9]'
  */
-List<int> convertToCoords(String input) {
+Coords convertToCoords(String input) {
   var cleaned = input.replaceAll(' ', '').toUpperCase();
 
-  assert(new RegExp('[A-J][1-9]|10').firstMatch(cleaned) != null);
+  assert(RegExp('[A-J][1-9]|10').firstMatch(cleaned) != null);
 
   var rowLetter = cleaned[0];
   var colNumber = int.parse(cleaned.substring(1), radix:10);
 
-  return [rows[rowLetter], colNumber - 1];
+  return Coords(rows[rowLetter], colNumber - 1);
 }
 
-String printBoard() {
+String printBoard(BoardOverlay hits) {
   stdout.writeln(' |1|2|3|4|5|6|7|8|9|10');
 
-  for (String rowLetter in rows.keys) {
+  for (int row = 0; row < rows.keys.length; row++) {// String rowLetter in rows.keys) {
+    var rowLetter = rows.keys.elementAt(row);
     stdout.write(rowLetter + '|');
     for (int col = 0; col < columnCount; col++) {
-      stdout.write('_|');
+      if (hits.spaces[row][col]) {
+        stdout.write('X|');
+      } else {
+        stdout.write('_|');
+      }
     }
     stdout.writeln();
   }
 }
+
+
