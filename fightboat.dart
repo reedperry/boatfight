@@ -16,11 +16,11 @@ const rows = {
 const columnCount = 10;
 
 class Boat {
-  List<Coords> locations;
-  List<Coords> hits;
+  Set<Coords> locations;
+  Set<Coords> hits;
 
   bool isSunk() {
-    return this.locations.length == this.hits.length;
+    return this.locations.difference(this.hits).isEmpty;
   }
 }
 
@@ -41,7 +41,7 @@ class Coords {
 class BoardOverlay {
   List<List<bool>> spaces;
 
-  BoardOverlay(List<Coords> spaces) {
+  BoardOverlay.fromSpaces(List<Coords> spaces) {
     var row = List.filled(10, false);
     var grid = List<List<bool>>(10);
     for (var i = 0; i < rows.keys.length; i++) {
@@ -65,7 +65,7 @@ void main(List<String> args) {
   String space = stdin.readLineSync();
   List<String> spaces = space.split(RegExp(r'\s+'));
   List<Coords> firedAt = spaces.map((s) => convertToCoords(s)).toList();
-  var attacks = BoardOverlay(firedAt);
+  var attacks = BoardOverlay.fromSpaces(firedAt);
   printBoard(attacks);
 }
 
@@ -79,15 +79,15 @@ Coords convertToCoords(String input) {
   assert(RegExp('[A-J][1-9]|10').firstMatch(cleaned) != null);
 
   var rowLetter = cleaned[0];
-  var colNumber = int.parse(cleaned.substring(1), radix:10);
+  var colNumber = int.parse(cleaned.substring(1), radix: 10);
 
   return Coords(rows[rowLetter], colNumber - 1);
 }
 
-String printBoard(BoardOverlay hits) {
+void printBoard(BoardOverlay hits) {
   stdout.writeln(' |1|2|3|4|5|6|7|8|9|10');
 
-  for (int row = 0; row < rows.keys.length; row++) {// String rowLetter in rows.keys) {
+  for (int row = 0; row < rows.keys.length; row++) {
     var rowLetter = rows.keys.elementAt(row);
     stdout.write(rowLetter + '|');
     for (int col = 0; col < columnCount; col++) {
@@ -100,5 +100,3 @@ String printBoard(BoardOverlay hits) {
     stdout.writeln();
   }
 }
-
-
