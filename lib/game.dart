@@ -13,10 +13,11 @@ const rows = {
 
 const columnCount = 10;
 
+/// Players in the game
 enum Player { one, two }
 
-// Need to get this going, bools aren't enough to mark everything
-// enum Status { empty, boat, hit, miss }
+/// Possible status for a space on the board
+enum Status { boat, empty, hit, miss }
 
 class Game {
   Board board1;
@@ -65,33 +66,46 @@ class Coords {
 }
 
 class BoardOverlay {
-  List<List<bool>> spaces;
+  List<List<Status>> spaces;
 
-  BoardOverlay.fromSpaces(List<Coords> spaces) {
-    var row = List.filled(10, false);
-    var grid = List<List<bool>>(10);
+  BoardOverlay.fromHits(List<Coords> spaces) {
+    var row = List.filled(10, Status.empty);
+    var grid = List<List<Status>>(10);
     for (var i = 0; i < rows.keys.length; i++) {
       grid[i] = List.from(row);
     }
 
     for (var space in spaces) {
-      grid[space.row][space.col] = true;
+      grid[space.row][space.col] = Status.hit;
+    }
+
+    this.spaces = grid;
+  }
+
+  BoardOverlay.fromMisses(List<Coords> spaces) {
+    var row = List.filled(10, Status.empty);
+    var grid = List<List<Status>>(10);
+    for (var i = 0; i < rows.keys.length; i++) {
+      grid[i] = List.from(row);
+    }
+
+    for (var space in spaces) {
+      grid[space.row][space.col] = Status.miss;
     }
 
     this.spaces = grid;
   }
 
   BoardOverlay.fromBoats(List<Boat> boats) {
-    // bool isn't enough to show hits + unhit boat spaces
-    var row = List.filled(10, false);
-    var grid = List<List<bool>>(10);
+    var row = List.filled(10, Status.empty);
+    var grid = List<List<Status>>(10);
     for (var i = 0; i < rows.keys.length; i++) {
       grid[i] = List.from(row);
     }
 
     for (var boat in boats) {
       for (var space in boat.locations) {
-        grid[space.row][space.col] = true;
+        grid[space.row][space.col] = Status.boat;
       }
     }
 
