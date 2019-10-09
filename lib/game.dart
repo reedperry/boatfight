@@ -51,6 +51,7 @@ class Boat {
   }
 }
 
+// Coords represents a row/column pair for a single location on the board
 class Coords {
   int row, col;
 
@@ -65,32 +66,29 @@ class Coords {
   }
 }
 
+/// Shot represents a single shot displayed on the board
+class Shot {
+  Coords coords;
+  Status status;
+
+  Shot(Coords coords, Status status) {
+    this.coords = coords;
+    this.status = status;
+  }
+}
+
 class BoardOverlay {
   List<List<Status>> spaces;
 
-  BoardOverlay.fromHits(List<Coords> spaces) {
+  BoardOverlay.fromShots(List<Shot> shots) {
     var row = List.filled(10, Status.empty);
     var grid = List<List<Status>>(10);
     for (var i = 0; i < rows.keys.length; i++) {
       grid[i] = List.from(row);
     }
 
-    for (var space in spaces) {
-      grid[space.row][space.col] = Status.hit;
-    }
-
-    this.spaces = grid;
-  }
-
-  BoardOverlay.fromMisses(List<Coords> spaces) {
-    var row = List.filled(10, Status.empty);
-    var grid = List<List<Status>>(10);
-    for (var i = 0; i < rows.keys.length; i++) {
-      grid[i] = List.from(row);
-    }
-
-    for (var space in spaces) {
-      grid[space.row][space.col] = Status.miss;
+    for (var shot in shots) {
+      grid[shot.coords.row][shot.coords.col] = shot.status;
     }
 
     this.spaces = grid;
