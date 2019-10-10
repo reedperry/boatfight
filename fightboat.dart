@@ -5,23 +5,21 @@ void main(List<String> args) {
   exitCode = 0;
   print('--- FIGHTBOAT ---');
 
-  // Parsing multiple inputs during dev
-  stdout.writeln("Your move(s):");
-  String space = stdin.readLineSync();
-  List<String> spaces = space.split(RegExp(r'\s+'));
-  var firedAt =
-      spaces.map((s) => Shot(convertToCoords(s), Status.hit)).toList();
-  var misses = [
-    Shot(Coords(4, 5), Status.miss),
-    Shot(Coords(7, 2), Status.miss)
-  ];
-  var shots = BoardOverlay.fromShots(firedAt + misses);
-
   var boats = List<Boat>();
   boats.add(Boat([Coords(0, 1), Coords(0, 2), Coords(0, 3)]));
   boats.add(Boat([Coords(4, 3), Coords(5, 3), Coords(6, 3), Coords(7, 3)]));
   var boatMap = BoardOverlay.fromBoats(boats);
-  printBoard(boatMap, shots);
+
+  var target = getTargetCoords();
+  var shot = Shot(target, Status.miss);
+  var board = BoardOverlay.fromShots([shot]);
+  printBoard(boatMap, board);
+}
+
+Coords getTargetCoords() {
+  stdout.writeln("Enter target coordinates:");
+  var space = stdin.readLineSync();
+  return convertToCoords(space);
 }
 
 /// Convert user coordinates input into 0-based numerical indices
@@ -48,7 +46,7 @@ void printBoard(BoardOverlay boats, BoardOverlay shots) {
         stdout.write('X|');
       } else if (shots.spaces[row][col] == Status.miss) {
         stdout.write('+|');
-      } else if (boats.spaces[row][col] == Status.boat) {
+      } else if (boats != null && boats.spaces[row][col] == Status.boat) {
         stdout.write('O|');
       } else {
         stdout.write('_|');

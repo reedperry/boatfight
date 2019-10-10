@@ -20,21 +20,75 @@ enum Player { one, two }
 enum Status { boat, empty, hit, miss }
 
 class Game {
+  bool started = false;
   Board board1;
   Board board2;
   Player currentPlayerTurn;
 
+  bool isSetUp() {
+    return !started &&
+        board1.getBoats().length == 5 &&
+        board2.getBoats().length == 5;
+  }
+
+  void startGame() {
+    started = true;
+  }
+
+  void doTurn(Coords target) {
+    if (currentPlayerTurn == Player.one) {
+      currentPlayerTurn = Player.two;
+    } else {
+      currentPlayerTurn = Player.one;
+    }
+  }
+
   bool isOver() {
     return board1.areAllBoatsSunk() || board2.areAllBoatsSunk();
+  }
+
+  Player getWinner() {
+    if (board1.areAllBoatsSunk()) {
+      return Player.two;
+    } else if (board2.areAllBoatsSunk()) {
+      return Player.one;
+    } else {
+      return null;
+    }
   }
 }
 
 class Board {
-  List<BoardOverlay> overlays;
-  List<Boat> boats;
+  List<Shot> _shots;
+  List<Boat> _boats;
+
+  Board() {
+    _boats = [];
+    _shots = [];
+  }
+
+  List<Boat> getBoats() {
+    return this._boats;
+  }
+
+  List<Shot> getShots() {
+    return this._shots;
+  }
+
+  void addShot(Coords coords) {
+
+  }
+
+  bool isBoatAtCoords(Coords coords) {
+
+  }
+
+  bool isShotAtCoords(Coords coords) {
+
+  }
 
   bool areAllBoatsSunk() {
-    return this.boats.every((boat) => boat.isSunk());
+    return this._boats.every((boat) => boat.isSunk());
   }
 }
 
