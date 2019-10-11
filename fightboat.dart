@@ -14,6 +14,9 @@ void main(List<String> args) {
   var shot = Shot(target, Status.miss);
   var board = BoardOverlay.fromShots([shot]);
   printBoard(boatMap, board);
+
+  var game = new Game();
+  print(game);
 }
 
 Coords getTargetCoords() {
