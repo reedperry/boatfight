@@ -141,15 +141,7 @@ class Boat {
   Set<Coords> _hits;
 
   Boat(List<Coords> coords) {
-    var columns = coords.map((coord) => coord.col);
-    var rows = coords.map((coord) => coord.row);
-    if (Set.from(columns).length > 1 && Set.from(rows).length > 1) {
-      throw Exception(
-          'Illegal boat positioning. Must occupy either one column or one row.');
-    }
-    if (coords.length < 2 || coords.length > 5) {
-      throw Exception('Illegal boat length: $coords.length');
-    }
+    validateCoords(coords);
     _locations = Set.from(coords);
   }
 
@@ -159,6 +151,27 @@ class Boat {
 
   void hitAt(Coords coords) {
     _hits.add(coords);
+  }
+
+  void validateCoords(List<Coords> coords) {
+    if (coords.length < 2 || coords.length > 5) {
+      throw Exception('Illegal boat length: {$coords.length}');
+    }
+    if (coords.length != Set.from(coords).length) {
+      throw Exception(
+          'Illegal boat positioning. Duplicate coordinates occupied.');
+    }
+
+    var columns = coords.map((coord) => coord.col);
+    var rows = coords.map((coord) => coord.row);
+    var isVertical = Set.from(columns).length == 1;
+    var isHorizontal = Set.from(rows).length == 1;
+    if (!isVertical && !isHorizontal) {
+      throw Exception(
+          'Non-linear boat positioning. Must occupy either one column or one row.');
+    }
+
+    // TODO Verify boat occupies consecutive spaces
   }
 
   bool isSunk() {
@@ -175,10 +188,7 @@ class Boat {
 class Coords {
   int row, col;
 
-  Coords(row, col) {
-    this.row = row;
-    this.col = col;
-  }
+  Coords(this.row, this.col);
 
   @override
   int get hashCode {
@@ -206,10 +216,7 @@ class Shot {
   Coords coords;
   Status status;
 
-  Shot(Coords coords, Status status) {
-    this.coords = coords;
-    this.status = status;
-  }
+  Shot(this.coords, this.status);
 
   @override
   String toString() {
