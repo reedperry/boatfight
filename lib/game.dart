@@ -20,12 +20,13 @@ enum Player { one, two }
 enum Status { boat, empty, hit, miss }
 
 class Game {
-  bool started = false;
+  bool started;
   Board board1;
   Board board2;
   Player currentPlayerTurn;
 
   Game() {
+    started = false;
     board1 = new Board();
     board2 = new Board();
   }
@@ -140,6 +141,15 @@ class Boat {
   Set<Coords> _hits;
 
   Boat(List<Coords> coords) {
+    var columns = coords.map((coord) => coord.col);
+    var rows = coords.map((coord) => coord.row);
+    if (Set.from(columns).length > 1 && Set.from(rows).length > 1) {
+      throw Exception(
+          'Illegal boat positioning. Must occupy either one column or one row.');
+    }
+    if (coords.length < 2 || coords.length > 5) {
+      throw Exception('Illegal boat length: $coords.length');
+    }
     _locations = Set.from(coords);
   }
 
