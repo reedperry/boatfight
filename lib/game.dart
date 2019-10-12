@@ -145,6 +145,13 @@ class Boat {
     _locations = Set.from(coords);
   }
 
+  Boat.fromRange(Coords start, Coords end) {
+    final coords = convertCoordsRangeToList(start, end);
+    // Can we call the default constructor here instead?
+    validateCoords(coords);
+    _locations = Set.from(coords);
+  }
+
   List<Coords> getLocations() {
     return _locations.toList();
   }
@@ -256,4 +263,23 @@ class BoardOverlay {
 
     this.spaces = grid;
   }
+}
+
+List<Coords> convertCoordsRangeToList(Coords start, Coords end) {
+  if (start == end) {
+    throw new Exception(
+        'Start and end coordinates of a range must be different');
+  }
+  var list = [start, end];
+  if (start.col == end.col) {
+    for (var i = 1; i < end.row - start.row; i++) {
+      list.insert(i, Coords(start.row + i, start.col));
+    }
+  } else if (start.row == end.row) {
+    for (var i = 1; i < end.col - start.col; i++) {
+      list.insert(i, Coords(start.row, start.col + i));
+    }
+  }
+
+  return list;
 }
