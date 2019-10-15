@@ -5,18 +5,55 @@ void main(List<String> args) {
   exitCode = 0;
   print('--- FIGHTBOAT ---');
 
-  var boats = List<Boat>();
-  boats.add(Boat([Coords(0, 1), Coords(0, 2), Coords(0, 3)]));
-  boats.add(Boat([Coords(4, 3), Coords(5, 3), Coords(6, 3), Coords(7, 3)]));
-  var boatMap = BoardOverlay.fromBoats(boats);
+  var boat1 = Boat([Coords(0, 1), Coords(0, 2), Coords(0, 3)]);
+  var boat2 = Boat([Coords(4, 3), Coords(5, 3), Coords(6, 3), Coords(7, 3)]);
+  var boat3 = Boat([Coords(1, 0), Coords(2, 0), Coords(3, 0)]);
+  var boat4 = Boat([Coords(6, 6), Coords(6, 7), Coords(6, 8), Coords(6, 9)]);
+  var boat5 = Boat([Coords(9, 6), Coords(8, 6), Coords(7, 6)]);
 
-  var target = getTargetCoords();
-  var shot = Shot(target, Status.miss);
-  var board = BoardOverlay.fromShots([shot]);
-  printBoard(boatMap, board);
+  var boat6 = Boat([Coords(0, 1), Coords(0, 2), Coords(0, 3)]);
+  var boat7 = Boat([Coords(4, 3), Coords(5, 3), Coords(6, 3), Coords(7, 3)]);
+  var boat8 = Boat([Coords(1, 0), Coords(2, 0), Coords(3, 0)]);
+  var boat9 = Boat([Coords(6, 6), Coords(6, 7), Coords(6, 8), Coords(6, 9)]);
+  var boat10 = Boat([Coords(9, 6), Coords(8, 6), Coords(7, 6)]);
 
   var game = new Game();
+  game.addBoat(boat1, Player.one);
+  game.addBoat(boat2, Player.one);
+  game.addBoat(boat3, Player.one);
+  game.addBoat(boat4, Player.one);
+  game.addBoat(boat5, Player.one);
+
+  game.addBoat(boat6, Player.two);
+  game.addBoat(boat7, Player.two);
+  game.addBoat(boat8, Player.two);
+  game.addBoat(boat9, Player.two);
+  game.addBoat(boat10, Player.two);
+
+  game.startGame();
+
   print(game);
+
+  game.doTurn(Coords(1, 0));
+  game.doTurn(Coords(4, 3));
+
+  game.doTurn(Coords(2, 0));
+  game.doTurn(Coords(2, 5));
+
+  game.doTurn(Coords(3, 0));
+  game.doTurn(Coords(1, 1));
+
+  print(game);
+
+  print('\n');
+  print('Player One');
+  printBoard(BoardOverlay.fromBoats(game.board1.getBoats()),
+      BoardOverlay.fromShots(game.board1.getShots()));
+
+  print('\n');
+  print('Player Two');
+  printBoard(BoardOverlay.fromBoats(game.board2.getBoats()),
+      BoardOverlay.fromShots(game.board2.getShots()));
 }
 
 Coords getTargetCoords() {
