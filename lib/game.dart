@@ -37,8 +37,19 @@ class Game {
         board2.getBoats().length == 5;
   }
 
+  void addBoat(Boat boat, Player player) {
+    if (player == Player.one) {
+      board1.addBoat(boat);
+    } else if (player == Player.two) {
+      board2.addBoat(boat);
+    }
+  }
+
   void startGame() {
-    started = true;
+    if (isSetUp()) {
+      started = true;
+      currentPlayerTurn = Player.one;
+    }
   }
 
   void doTurn(Coords target) {
@@ -96,10 +107,13 @@ class Board {
     return this._shots;
   }
 
+  void addBoat(Boat boat) {
+    _boats.add(boat);
+  }
+
   void addShot(Coords coords) {
     if (isShotAtCoords(coords)) {
-      // handle error
-      return;
+      throw new Exception('A shot is already present at $coords');
     }
 
     var boat = getBoatAtCoords(coords);
@@ -143,6 +157,7 @@ class Boat {
   Boat(List<Coords> coords) {
     validateCoords(coords);
     _locations = Set.from(coords);
+    _hits = {};
   }
 
   Boat.fromRange(Coords start, Coords end) {
@@ -150,6 +165,7 @@ class Boat {
     // Can we call the default constructor here instead?
     validateCoords(coords);
     _locations = Set.from(coords);
+    _hits = {};
   }
 
   List<Coords> getLocations() {
@@ -187,7 +203,7 @@ class Boat {
 
   @override
   String toString() {
-    return 'Boat at $_locations - hit at $_hits';
+    return 'Boat ${isSunk() ? "[SUNK]" : ""} at $_locations - hit at $_hits';
   }
 }
 
