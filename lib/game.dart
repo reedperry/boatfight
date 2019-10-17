@@ -27,8 +27,8 @@ class Game {
 
   Game() {
     started = false;
-    board1 = new Board();
-    board2 = new Board();
+    board1 = Board();
+    board2 = Board();
   }
 
   bool isSetUp() {
@@ -113,7 +113,7 @@ class Board {
 
   void addShot(Coords coords) {
     if (isShotAtCoords(coords)) {
-      throw new Exception('A shot is already present at $coords');
+      throw Exception('A shot is already present at $coords');
     }
 
     var boat = getBoatAtCoords(coords);
@@ -185,8 +185,8 @@ class Boat {
           'Illegal boat positioning. Duplicate coordinates occupied.');
     }
 
-    var columns = coords.map((coord) => coord.col);
-    var rows = coords.map((coord) => coord.row);
+    List<int> columns = List.from(coords.map((coord) => coord.col));
+    List<int> rows = List.from(coords.map((coord) => coord.row));
     var isVertical = Set.from(columns).length == 1;
     var isHorizontal = Set.from(rows).length == 1;
     if (!isVertical && !isHorizontal) {
@@ -194,7 +194,25 @@ class Boat {
           'Non-linear boat positioning. Must occupy either one column or one row.');
     }
 
-    // TODO Verify boat occupies consecutive spaces
+    // Verify that the coordinates are consecutive.
+    // There's probably a more elegant way to do this.
+    if (isHorizontal) {
+      columns.sort();
+      for (var i = 1; i < columns.length; i++) {
+        if (columns[i - 1] + 1 != columns[i]) {
+          throw Exception(
+              'Boat does not occupy consecutive spaces - gap from column ${columns[i - 1]} to ${columns[i]}');
+        }
+      }
+    } else if (isVertical) {
+      rows.sort();
+      for (var i = 1; i < rows.length; i++) {
+        if (rows[i - 1] + 1 != rows[i]) {
+          throw Exception(
+              'Boat does not occupy consecutive spaces - gap from row ${rows[i - 1]} to ${rows[i]}');
+        }
+      }
+    }
   }
 
   bool isSunk() {
@@ -211,7 +229,14 @@ class Boat {
 class Coords {
   int row, col;
 
-  Coords(this.row, this.col);
+  Coords(row, col) {
+    if (row >= 0 && row < 10 && col >= 0 && col < 10) {
+      this.row = row;
+      this.col = col;
+    } else {
+      throw Exception('Invalid Coords: row: $row, column: $col');
+    }
+  }
 
   @override
   int get hashCode {
@@ -283,8 +308,7 @@ class BoardOverlay {
 
 List<Coords> convertCoordsRangeToList(Coords start, Coords end) {
   if (start == end) {
-    throw new Exception(
-        'Start and end coordinates of a range must be different');
+    throw Exception('Start and end coordinates of a range must be different');
   }
   var list = [start, end];
   if (start.col == end.col) {
