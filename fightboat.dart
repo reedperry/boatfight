@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'lib/board.dart';
+import 'lib/boat.dart';
+import 'lib/coords.dart';
 import 'lib/game.dart';
 
 void main(List<String> args) {

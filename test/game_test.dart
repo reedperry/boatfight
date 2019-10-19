@@ -1,5 +1,6 @@
 import 'package:test/test.dart';
-import 'package:fightboat/game.dart';
+import 'package:fightboat/boat.dart';
+import 'package:fightboat/coords.dart';
 
 void main() {
   group('A Boat', () {
