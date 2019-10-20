@@ -89,15 +89,26 @@ List<Coords> convertCoordsRangeToList(Coords start, Coords end) {
   if (start == end) {
     throw Exception('Start and end coordinates of a range must be different');
   }
-  var list = [start, end];
+  List<Coords> list = [];
+
   if (start.col == end.col) {
-    for (var i = 1; i < end.row - start.row; i++) {
-      list.insert(i, Coords(start.row + i, start.col));
-    }
+    var coordinatesNeeded = (start.row - end.row).abs() - 1;
+    var direction = start.row < end.row ? 1 : -1;
+    var connectingCoords = List<Coords>.generate(coordinatesNeeded, (i) {
+      var row = start.row + ((i + 1) * direction);
+      return Coords(row, start.col);
+    });
+
+    list = [start, ...connectingCoords, end];
   } else if (start.row == end.row) {
-    for (var i = 1; i < end.col - start.col; i++) {
-      list.insert(i, Coords(start.row, start.col + i));
-    }
+    var coordinatesNeeded = (start.col - end.col).abs() - 1;
+    var direction = start.col < end.col ? 1 : -1;
+    var connectingCoords = List<Coords>.generate(coordinatesNeeded, (i) {
+      var column = start.col + ((i + 1) * direction);
+      return Coords(start.row, column);
+    });
+
+    list = [start, ...connectingCoords, end];
   }
 
   return list;

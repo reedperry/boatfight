@@ -44,6 +44,19 @@ void main() {
     });
 
     test(
+        'can be created from a coordinate range with decreasing row coordinate',
+        () {
+      var expectedCoords = [
+        Coords(9, 5),
+        Coords(8, 5),
+        Coords(7, 5),
+        Coords(6, 5)
+      ];
+      var boat = Boat.fromRange(Coords(9, 5), Coords(6, 5));
+      expect(boat.getLocations(), equals(expectedCoords));
+    });
+
+    test(
         'cannot be created from a set of coordinates containing a non-consecutive set of rows',
         () {
       expect(() => Boat([Coords(3, 4), Coords(4, 4), Coords(6, 4)]),
