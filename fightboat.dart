@@ -8,45 +8,16 @@ void main(List<String> args) {
   exitCode = 0;
   print('--- FIGHTBOAT ---');
 
-  var boat1 = Boat([Coords(0, 1), Coords(0, 2), Coords(0, 3)]);
-  var boat2 = Boat([Coords(4, 3), Coords(5, 3), Coords(6, 3), Coords(7, 3)]);
-  var boat3 = Boat([Coords(1, 0), Coords(2, 0), Coords(3, 0)]);
-  var boat4 = Boat([Coords(6, 6), Coords(6, 7), Coords(6, 8), Coords(6, 9)]);
-  var boat5 = Boat([Coords(9, 6), Coords(8, 6), Coords(7, 6)]);
-
-  var boat6 = Boat([Coords(0, 1), Coords(0, 2), Coords(0, 3)]);
-  var boat7 = Boat([Coords(4, 3), Coords(5, 3), Coords(6, 3), Coords(7, 3)]);
-  var boat8 = Boat([Coords(1, 0), Coords(2, 0), Coords(3, 0)]);
-  var boat9 = Boat([Coords(6, 6), Coords(6, 7), Coords(6, 8), Coords(6, 9)]);
-  var boat10 = Boat([Coords(9, 6), Coords(8, 6), Coords(7, 6)]);
-
   var game = new Game();
-  game.addBoat(boat1, Player.one);
-  game.addBoat(boat2, Player.one);
-  game.addBoat(boat3, Player.one);
-  game.addBoat(boat4, Player.one);
-  game.addBoat(boat5, Player.one);
 
-  game.addBoat(boat6, Player.two);
-  game.addBoat(boat7, Player.two);
-  game.addBoat(boat8, Player.two);
-  game.addBoat(boat9, Player.two);
-  game.addBoat(boat10, Player.two);
+  while (!game.isSetUp()) {
+    var playerOneBoat = enterNewBoatForPlayer(Player.one);
+    game.addBoat(playerOneBoat, Player.one);
+    var playerTwoBoat = enterNewBoatForPlayer(Player.two);
+    game.addBoat(playerTwoBoat, Player.two);
+  }
 
   game.startGame();
-
-  print(game);
-
-  game.doTurn(Coords(1, 0));
-  game.doTurn(Coords(4, 3));
-
-  game.doTurn(Coords(2, 0));
-  game.doTurn(Coords(2, 5));
-
-  game.doTurn(Coords(3, 0));
-  game.doTurn(Coords(1, 1));
-
-  print(game);
 
   print('\n');
   print('Player One');
@@ -57,6 +28,36 @@ void main(List<String> args) {
   print('Player Two');
   printBoard(BoardOverlay.fromBoats(game.board2.getBoats()),
       BoardOverlay.fromShots(game.board2.getShots()));
+
+  var target = getTargetCoords();
+  game.doTurn(target);
+
+  print(game);
+}
+
+/// Create a Boat for a given player, with the location determined by a user
+/// input string providing the start and end coordinates of the boat.
+Boat enterNewBoatForPlayer(Player player) {
+  stdout.writeln('Add a boat for player $player:');
+  var range = stdin.readLineSync();
+  List<Coords> edges = parseRangeInput(range);
+  if (edges.length == 2) {
+    return Boat.fromRange(edges[0], edges[1]);
+  }
+
+  throw Exception('Failed to create boat from input: $range.');
+}
+
+/// Parse an input string containing the start and end coordinates of a range
+/// into a list of Coords.
+List<Coords> parseRangeInput(String rangeInput) {
+  var textCoords = rangeInput.split(RegExp('[-\\s+]'));
+  if (textCoords.length != 2) {
+    throw Exception(
+        'Illegal entry for boat range: $textCoords.\nPlease enter in format: "a1-d1" or "a1 d1".');
+  }
+
+  return [convertToCoords(textCoords[0]), convertToCoords(textCoords[1])];
 }
 
 Coords getTargetCoords() {

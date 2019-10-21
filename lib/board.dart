@@ -37,6 +37,10 @@ class Board {
   }
 
   void addBoat(Boat boat) {
+    if (boat.getLocations().any((coords) => getBoatAtCoords(coords) != null)) {
+      throw Exception('This boat collides with another boat on the board!');
+    }
+
     _boats.add(boat);
   }
 
