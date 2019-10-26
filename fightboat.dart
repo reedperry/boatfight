@@ -35,6 +35,11 @@ void main(List<String> args) {
     game.doTurn(target);
     print(game);
   }
+
+  var winner = game.getWinner();
+  print('WINNER - $winner');
+
+  exit(exitCode);
 }
 
 /// Create a Boat for a given player, with the location determined by a user

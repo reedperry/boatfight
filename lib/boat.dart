@@ -17,6 +17,10 @@ class Boat {
     return _locations.toList();
   }
 
+  int getLength() {
+    return _locations.length;
+  }
+
   void hitAt(Coords coords) {
     _hits.add(coords);
   }

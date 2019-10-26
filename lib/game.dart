@@ -23,7 +23,6 @@ class Game {
         board2.getBoats().length == 5;
   }
 
-  // TODO Need logic for rules on correct set of boat lengths
   void addBoat(Boat boat, Player player) {
     if (player == Player.one) {
       board1.addBoat(boat);

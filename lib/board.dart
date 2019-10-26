@@ -37,11 +37,30 @@ class Board {
   }
 
   void addBoat(Boat boat) {
+    if (!doesBoatFitInFleet(boat.getLength())) {
+      throw Exception(
+          'A boat ${boat.getLength()} spaces long is not allowed on this board. Length of all boats on the board should be 2, 3, 3, 4, and 5.');
+    }
     if (boat.getLocations().any((coords) => getBoatAtCoords(coords) != null)) {
       throw Exception('This boat collides with another boat on the board!');
     }
 
     _boats.add(boat);
+  }
+
+  bool doesBoatFitInFleet(int length) {
+    var maxLengthCounts = <int, int>{
+      2: 1,
+      3: 2,
+      4: 1,
+      5: 1
+    };
+
+    var countOfLength = _boats.where((boat) => boat.getLength() == length).length;
+    if (countOfLength >= maxLengthCounts[length]) {
+      return false;
+    }
+    return true;
   }
 
   void addShot(Coords coords) {
