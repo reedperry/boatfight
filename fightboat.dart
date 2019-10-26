@@ -29,10 +29,12 @@ void main(List<String> args) {
   printBoard(BoardOverlay.fromBoats(game.board2.getBoats()),
       BoardOverlay.fromShots(game.board2.getShots()));
 
-  var target = getTargetCoords();
-  game.doTurn(target);
-
-  print(game);
+  while (!game.isOver()) {
+    print(game.currentPlayerTurn == Player.one ? 'Player One' : 'Player Two');
+    var target = getTargetCoords();
+    game.doTurn(target);
+    print(game);
+  }
 }
 
 /// Create a Boat for a given player, with the location determined by a user
