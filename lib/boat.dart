@@ -10,13 +10,8 @@ class Boat {
     _hits = {};
   }
 
-  Boat.fromRange(Coords start, Coords end) {
-    final coords = convertCoordsRangeToList(start, end);
-    // Can we call the default constructor here instead?
-    validateCoords(coords);
-    _locations = Set.from(coords);
-    _hits = {};
-  }
+  Boat.fromRange(Coords start, Coords end)
+      : this(convertCoordsRangeToList(start, end));
 
   List<Coords> getLocations() {
     return _locations.toList();
