@@ -41,11 +41,37 @@ class Board {
       throw Exception(
           'A boat ${boat.getLength()} spaces long is not allowed on this board. Length of all boats on the board should be 2, 3, 3, 4, and 5.');
     }
-    if (boat.getLocations().any((coords) => getBoatAtCoords(coords) != null)) {
+    if (doesBoatCollideWithAnother(boat)) {
       throw Exception('This boat collides with another boat on the board!');
     }
 
     _boats.add(boat);
+  }
+
+  /// Add a new shot to a board at the given coordinates.
+  /// Returns the result of the shot.
+  Status addShot(Coords coords) {
+    if (hasShotAtCoords(coords)) {
+      throw Exception('A shot is already present at $coords');
+    }
+
+    var boat = getBoatAtCoords(coords);
+    if (boat != null) {
+      boat.hitAt(coords);
+      _shots.add(Shot(coords, Status.hit));
+      return Status.hit;
+    } else {
+      _shots.add(Shot(coords, Status.miss));
+      return Status.miss;
+    }
+  }
+
+  bool hasShotAtCoords(Coords coords) {
+    return _shots.any((shot) => shot.coords == coords);
+  }
+
+  bool areAllBoatsSunk() {
+    return _boats.every((boat) => boat.isSunk());
   }
 
   bool doesBoatFitInFleet(int length) {
@@ -63,18 +89,8 @@ class Board {
     return true;
   }
 
-  void addShot(Coords coords) {
-    if (isShotAtCoords(coords)) {
-      throw Exception('A shot is already present at $coords');
-    }
-
-    var boat = getBoatAtCoords(coords);
-    if (boat != null) {
-      boat.hitAt(coords);
-      _shots.add(Shot(coords, Status.hit));
-    } else {
-      _shots.add(Shot(coords, Status.miss));
-    }
+  bool doesBoatCollideWithAnother(Boat boat) {
+    return boat.getLocations().any((coords) => getBoatAtCoords(coords) != null);
   }
 
   Boat getBoatAtCoords(Coords coords) {
@@ -84,14 +100,6 @@ class Board {
       }
     }
     return null;
-  }
-
-  bool isShotAtCoords(Coords coords) {
-    return _shots.any((shot) => shot.coords == coords);
-  }
-
-  bool areAllBoatsSunk() {
-    return _boats.every((boat) => boat.isSunk());
   }
 
   @override

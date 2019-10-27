@@ -11,9 +11,12 @@ void main(List<String> args) {
   var game = new Game();
 
   while (!game.isSetUp()) {
-    var playerOneBoat = enterNewBoatForPlayer(Player.one);
+    var nextBoatNumber = game.board1.getBoats().length + 1;
+    var playerOneBoat = enterNewBoatForPlayer(Player.one, nextBoatNumber);
     game.addBoat(playerOneBoat, Player.one);
-    var playerTwoBoat = enterNewBoatForPlayer(Player.two);
+
+    nextBoatNumber = game.board2.getBoats().length + 1;
+    var playerTwoBoat = enterNewBoatForPlayer(Player.two, nextBoatNumber);
     game.addBoat(playerTwoBoat, Player.two);
   }
 
@@ -21,22 +24,40 @@ void main(List<String> args) {
 
   print('\n');
   print('Player One');
-  printBoard(BoardOverlay.fromBoats(game.board1.getBoats()),
-      BoardOverlay.fromShots(game.board1.getShots()));
+  printBoard(board: game.board1);
 
   print('\n');
   print('Player Two');
-  printBoard(BoardOverlay.fromBoats(game.board2.getBoats()),
-      BoardOverlay.fromShots(game.board2.getShots()));
+  printBoard(board: game.board2);
 
   while (!game.isOver()) {
-    print(game.currentPlayerTurn == Player.one ? 'Player One' : 'Player Two');
+    var player = game.currentPlayerTurn;
+
+    print(player == Player.one ? 'Player One' : 'Player Two');
     var target = getTargetCoords();
-    game.doTurn(target);
-    print(game);
+    var result = game.doTurn(target);
+
+    if (result == Status.hit) {
+      print('HIT!');
+    } else if (result == Status.miss) {
+      print('Miss.');
+    }
+
+    if (player == Player.one) {
+      print('Opponent Board:');
+      printBoard(board: game.board2, showBoats: false);
+      print('Your Board:');
+      printBoard(board: game.board1);
+    } else {
+      print('Opponent Board:');
+      printBoard(board: game.board1, showBoats: false);
+      print('Your Board:');
+      printBoard(board: game.board2);
+    }
   }
 
   var winner = game.getWinner();
+  print(game);
   print('WINNER - $winner');
 
   exit(exitCode);
@@ -44,8 +65,8 @@ void main(List<String> args) {
 
 /// Create a Boat for a given player, with the location determined by a user
 /// input string providing the start and end coordinates of the boat.
-Boat enterNewBoatForPlayer(Player player) {
-  stdout.writeln('Add a boat for player $player:');
+Boat enterNewBoatForPlayer(Player player, int boatNumber) {
+  stdout.writeln('Add a boat #$boatNumber for player $player:');
   var range = stdin.readLineSync();
   List<Coords> edges = parseRangeInput(range);
   if (edges.length == 2) {
@@ -83,10 +104,24 @@ Coords convertToCoords(String input) {
   var rowLetter = cleaned[0];
   var colNumber = int.parse(cleaned.substring(1), radix: 10);
 
+  if (!rows.containsKey(rowLetter)) {
+    throw Exception('Invalid row letter: $rowLetter');
+  }
+  if (colNumber < 1 || colNumber > columnCount) {
+    throw Exception('Invalid column number: $colNumber');
+  }
+
   return Coords(rows[rowLetter], colNumber - 1);
 }
 
-void printBoard(BoardOverlay boats, BoardOverlay shots) {
+void printBoard({Board board, bool showBoats = true}) {
+  if (board == null) {
+    return;
+  }
+
+  var boats = showBoats ? BoardOverlay.fromBoats(board.getBoats()) : null;
+  var shots = BoardOverlay.fromShots(board.getShots());
+
   stdout.writeln(' |1|2|3|4|5|6|7|8|9|10');
 
   for (int row = 0; row < rows.keys.length; row++) {

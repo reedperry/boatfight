@@ -38,14 +38,16 @@ class Game {
     }
   }
 
-  void doTurn(Coords target) {
+  Status doTurn(Coords target) {
+    var result;
     if (currentPlayerTurn == Player.one) {
-      board2.addShot(target);
+      result = board2.addShot(target);
       currentPlayerTurn = Player.two;
     } else {
-      board1.addShot(target);
+      result = board1.addShot(target);
       currentPlayerTurn = Player.one;
     }
+    return result;
   }
 
   bool isOver() {
