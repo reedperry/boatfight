@@ -1,14 +1,20 @@
 import 'dart:io';
+import 'lib/agent.dart';
 import 'lib/board.dart';
 import 'lib/boat.dart';
 import 'lib/coords.dart';
 import 'lib/game.dart';
 
+// const config = {
+//   'useAgent': true
+// };
+
 void main(List<String> args) {
   exitCode = 0;
   print('--- FIGHTBOAT ---');
 
-  var game = new Game();
+  var game = Game();
+  var agent = Agent();
 
   while (!game.isSetUp()) {
     var nextBoatNumber = game.board1.getBoats().length + 1;
@@ -16,8 +22,8 @@ void main(List<String> args) {
     game.addBoat(playerOneBoat, Player.one);
 
     nextBoatNumber = game.board2.getBoats().length + 1;
-    var playerTwoBoat = enterNewBoatForPlayer(Player.two, nextBoatNumber);
-    game.addBoat(playerTwoBoat, Player.two);
+    var agentBoat = getNextAgentBoat(agent, nextBoatNumber);
+    game.addBoat(agentBoat, Player.two);
   }
 
   game.startGame();
@@ -25,22 +31,30 @@ void main(List<String> args) {
   print('\n');
   print('Player One');
   printBoard(board: game.board1);
-
   print('\n');
-  print('Player Two');
-  printBoard(board: game.board2);
 
   while (!game.isOver()) {
     var player = game.currentPlayerTurn;
 
     print(player == Player.one ? 'Player One' : 'Player Two');
-    var target = getTargetCoords();
+    var target;
+    var targetAlphaNumeric;
+    if (player == Player.one) {
+      target = getTargetCoords();
+    } else {
+      target = agent.getNextShot();
+    }
+
+    targetAlphaNumeric = convertCoordsToAlphaNumeric(target);
+    print('Fires at $targetAlphaNumeric...');
+
     var result = game.doTurn(target);
+    agent.reportResult(result);
 
     if (result == Status.hit) {
-      print('HIT!');
+      print('HIT');
     } else if (result == Status.miss) {
-      print('Miss.');
+      print('MISS');
     }
 
     if (player == Player.one) {
@@ -48,17 +62,16 @@ void main(List<String> args) {
       printBoard(board: game.board2, showBoats: false);
       print('Your Board:');
       printBoard(board: game.board1);
-    } else {
-      print('Opponent Board:');
-      printBoard(board: game.board1, showBoats: false);
-      print('Your Board:');
-      printBoard(board: game.board2);
     }
   }
 
   var winner = game.getWinner();
   print(game);
-  print('WINNER - $winner');
+  if (winner == Player.one) {
+    print('YOU WIN!');
+  } else {
+    print('You lose.');
+  }
 
   exit(exitCode);
 }
@@ -74,6 +87,16 @@ Boat enterNewBoatForPlayer(Player player, int boatNumber) {
   }
 
   throw Exception('Failed to create boat from input: $range.');
+}
+
+Boat getNextAgentBoat(Agent agent, int boatNumber) {
+  var edges = agent.addBoat(boatNumber);
+  if (edges.length == 2) {
+    var playerTwoBoat = Boat.fromRange(edges[0], edges[1]);
+    return playerTwoBoat;
+  } else {
+    throw Exception('Expected 2 edges for new agent boat, received ${edges.length}.');
+  }
 }
 
 /// Parse an input string containing the start and end coordinates of a range
@@ -112,6 +135,12 @@ Coords convertToCoords(String input) {
   }
 
   return Coords(rows[rowLetter], colNumber - 1);
+}
+
+String convertCoordsToAlphaNumeric(Coords coords) {
+  var row = rowLabelsByCoord[coords.row];
+  var col = coords.col + 1;
+  return '$row$col'.toUpperCase();
 }
 
 void printBoard({Board board, bool showBoats = true}) {
