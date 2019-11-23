@@ -11,6 +11,8 @@ class Coords {
     }
   }
 
+  Coords.fromPair(List<String> pair) : this(pair[0], pair[1]);
+
   @override
   int get hashCode {
     int result = 17;

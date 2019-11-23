@@ -6,6 +6,8 @@ import 'lib/conversions.dart';
 import 'lib/coords.dart';
 import 'lib/game.dart';
 
+import 'test/mockdata.dart';
+
 // const config = {
 //   'useAgent': true
 // };
@@ -17,9 +19,18 @@ void main(List<String> args) {
   var game = Game();
   var agent = Agent();
 
+  var autoBoatSetUp = askForAutoBoatSetup();
+
   while (!game.isSetUp()) {
     var nextBoatNumber = game.board1.getBoats().length + 1;
-    var playerOneBoat = enterNewBoatForPlayer(Player.one, nextBoatNumber);
+    var playerOneBoat;
+    if (!autoBoatSetUp) {
+      playerOneBoat = enterNewBoatForPlayer(Player.one, nextBoatNumber);
+    } else {
+      var mockEntry = mockBoatEntries[nextBoatNumber - 1];
+      List<Coords> edges = parseRangeInput(mockEntry);
+      playerOneBoat = Boat.fromRange(edges[0], edges[1]);
+    }
     game.addBoat(playerOneBoat, Player.one);
 
     nextBoatNumber = game.board2.getBoats().length + 1;
@@ -88,6 +99,18 @@ Boat enterNewBoatForPlayer(Player player, int boatNumber) {
   }
 
   throw Exception('Failed to create boat from input: $range.');
+}
+
+bool askForAutoBoatSetup() {
+  stdout.writeln('Enter boats manually? (y/n):');
+  var answer = stdin.readLineSync();
+  if (answer == 'y') {
+    return false;
+  } else if (answer == 'n') {
+    return true;
+  } else {
+    return askForAutoBoatSetup();
+  }
 }
 
 Boat getNextAgentBoat(Agent agent, int boatNumber) {
