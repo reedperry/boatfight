@@ -2,6 +2,7 @@ import 'dart:io';
 import 'lib/agent.dart';
 import 'lib/board.dart';
 import 'lib/boat.dart';
+import 'lib/conversions.dart';
 import 'lib/coords.dart';
 import 'lib/game.dart';
 
@@ -95,7 +96,8 @@ Boat getNextAgentBoat(Agent agent, int boatNumber) {
     var playerTwoBoat = Boat.fromRange(edges[0], edges[1]);
     return playerTwoBoat;
   } else {
-    throw Exception('Expected 2 edges for new agent boat, received ${edges.length}.');
+    throw Exception(
+        'Expected 2 edges for new agent boat, received ${edges.length}.');
   }
 }
 
@@ -115,32 +117,6 @@ Coords getTargetCoords() {
   stdout.writeln("Enter target coordinates:");
   var space = stdin.readLineSync();
   return convertToCoords(space);
-}
-
-/// Convert user coordinates input into 0-based numerical indices
-/// e.g. 'A4' => '[0, 3]' and 'F10' => '[5, 9]'
-Coords convertToCoords(String input) {
-  var cleaned = input.replaceAll(' ', '').toUpperCase();
-
-  assert(RegExp('[A-J][1-9]|10').firstMatch(cleaned) != null);
-
-  var rowLetter = cleaned[0];
-  var colNumber = int.parse(cleaned.substring(1), radix: 10);
-
-  if (!rows.containsKey(rowLetter)) {
-    throw Exception('Invalid row letter: $rowLetter');
-  }
-  if (colNumber < 1 || colNumber > columnCount) {
-    throw Exception('Invalid column number: $colNumber');
-  }
-
-  return Coords(rows[rowLetter], colNumber - 1);
-}
-
-String convertCoordsToAlphaNumeric(Coords coords) {
-  var row = rowLabelsByCoord[coords.row];
-  var col = coords.col + 1;
-  return '$row$col'.toUpperCase();
 }
 
 void printBoard({Board board, bool showBoats = true}) {

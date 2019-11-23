@@ -16,7 +16,7 @@ class Agent {
     return [
       [Coords(0, 0), Coords(2, 0)],
       [Coords(3, 0), Coords(4, 0)],
-      [Coords(4,8), Coords(8, 8)],
+      [Coords(4, 8), Coords(8, 8)],
       [Coords(9, 5), Coords(9, 7)],
       [Coords(7, 3), Coords(7, 6)]
     ][boatNumber - 1];

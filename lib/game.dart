@@ -7,7 +7,11 @@ enum Player { one, two }
 
 class Game {
   bool started;
+
+  /// Player.one board
   Board board1;
+
+  /// Player.two board
   Board board2;
   Player currentPlayerTurn;
 
@@ -17,6 +21,7 @@ class Game {
     board2 = Board();
   }
 
+  /// Returns true only if the game is ready to begin, and has not yet begun.
   bool isSetUp() {
     return !started &&
         board1.getBoats().length == 5 &&
@@ -54,6 +59,8 @@ class Game {
     return started && (board1.areAllBoatsSunk() || board2.areAllBoatsSunk());
   }
 
+  /// Based on the current game state, return the winner of the game, or null if
+  /// there is no winner yet
   Player getWinner() {
     if (!started) return null;
 
@@ -92,7 +99,7 @@ class BoardOverlay {
       grid[shot.coords.row][shot.coords.col] = shot.status;
     }
 
-    this.spaces = grid;
+    spaces = grid;
   }
 
   BoardOverlay.fromBoats(List<Boat> boats) {
@@ -108,6 +115,6 @@ class BoardOverlay {
       }
     }
 
-    this.spaces = grid;
+    spaces = grid;
   }
 }
