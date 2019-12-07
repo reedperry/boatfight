@@ -49,6 +49,14 @@ void main(List<String> args) {
     var player = game.currentPlayerTurn;
 
     print(player == Player.one ? 'Player One' : 'Player Two');
+
+    if (player == Player.one) {
+      print('Opponent Board:');
+      printBoard(board: game.board2, showBoats: false);
+      print('Your Board:');
+      printBoard(board: game.board1);
+    }
+
     var target;
     var targetAlphaNumeric;
     if (player == Player.one) {
@@ -61,19 +69,14 @@ void main(List<String> args) {
     print('Fires at $targetAlphaNumeric...');
 
     var result = game.doTurn(target);
-    agent.reportResult(result);
+    if (player == Player.two) {
+      agent.reportResult(result);
+    }
 
     if (result == Status.hit) {
       print('HIT');
     } else if (result == Status.miss) {
       print('MISS');
-    }
-
-    if (player == Player.one) {
-      print('Opponent Board:');
-      printBoard(board: game.board2, showBoats: false);
-      print('Your Board:');
-      printBoard(board: game.board1);
     }
   }
 

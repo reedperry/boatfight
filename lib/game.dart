@@ -43,6 +43,8 @@ class Game {
     }
   }
 
+  /// TODO Should this result include whether a boat was just sunk? Could figure
+  /// it out in other ways too
   Status doTurn(Coords target) {
     var result;
     if (currentPlayerTurn == Player.one) {
