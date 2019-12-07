@@ -40,13 +40,18 @@ void main(List<String> args) {
 
   game.startGame();
 
-  print('\n');
-  print('Player One');
-  printBoard(board: game.board1);
-  print('\n');
-
   while (!game.isOver()) {
     var player = game.currentPlayerTurn;
+
+    if (player == Player.one) {
+      print('Opponent Board:');
+      printBoard(board: game.board2, showBoats: false);
+
+      sleep(Duration(seconds: 1));
+
+      print('Your Board:');
+      printBoard(board: game.board1);
+    }
 
     print(player == Player.one ? 'Player One' : 'Player Two');
 
@@ -66,18 +71,23 @@ void main(List<String> args) {
     }
 
     targetAlphaNumeric = convertCoordsToAlphaNumeric(target);
-    print('Fires at $targetAlphaNumeric...');
+    stdout.write('Fires at $targetAlphaNumeric... ');
 
     var result = game.doTurn(target);
     if (player == Player.two) {
       agent.reportResult(result);
     }
 
+    sleep(Duration(milliseconds: 500));
+
     if (result == Status.hit) {
-      print('HIT');
+      stdout.writeln('HIT');
     } else if (result == Status.miss) {
-      print('MISS');
+      stdout.writeln('MISS');
     }
+    stdout.writeln();
+
+    sleep(Duration(seconds: 1));
   }
 
   var winner = game.getWinner();
@@ -107,9 +117,9 @@ Boat enterNewBoatForPlayer(Player player, int boatNumber) {
 bool askForAutoBoatSetup() {
   stdout.writeln('Enter boats manually? (y/n):');
   var answer = stdin.readLineSync();
-  if (answer == 'y') {
+  if (answer.trim().toLowerCase() == 'y') {
     return false;
-  } else if (answer == 'n') {
+  } else if (answer.trim().toLowerCase() == 'n') {
     return true;
   } else {
     return askForAutoBoatSetup();

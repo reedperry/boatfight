@@ -1,8 +1,21 @@
 # FIGHTBOAT
 10 boats enter. Fewer leave.
 
-Learning Dart by writing a simple clone of a popular boat battle game.
+This is a simple clone of a popular ship battle game.
 
-Currently, this is a command line application. It's not playable yet, but getting pretty close to being able to go through a game flow on one machine (i.e. not exactly playable for two players keeping their boards secret).
+Currently, this is a command line application. It is playable, but still a little rough around the edges. A (very) basic computer opponent will play against you.
 
-I'd like to add an opponent to play against in single player games.
+To play it in its current state, you need to install the Dart VM, which comes with the [Dart SDK](https://dart.dev/get-dart).
+
+Clone this repository, and from the root directory, run:
+```
+dart fightboat.dart
+```
+
+
+
+### Roadmap:  
+- [ ] Gracefully handle player firing at a location already fired at
+- [X] Make computer agent track its shots to avoid duplicates
+- [ ] Make computer agent use a bit of logic for shot locations instead of random
+- [ ] ???
