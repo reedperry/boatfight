@@ -26,8 +26,9 @@ void main(List<String> args) {
 
   while (!game.isOver()) {
     runNextTurn(game, agent);
-    checkForWinner(game);
   }
+
+  finishGame(game);
 
   exit(exitCode);
 }
@@ -82,7 +83,7 @@ void runNextTurn(Game game, Agent agent) {
   sleep(Duration(seconds: 1));
 }
 
-void checkForWinner(Game game) {
+void finishGame(Game game) {
   var winner = game.getWinner();
   print(game);
   if (winner == Player.one) {
