@@ -36,7 +36,7 @@ class Game {
     }
   }
 
-  void startGame() {
+  void start() {
     if (isSetUp()) {
       started = true;
       currentPlayerTurn = Player.one;

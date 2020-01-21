@@ -8,10 +8,6 @@ import 'lib/game.dart';
 
 import 'test/mockdata.dart';
 
-// const config = {
-//   'useAgent': true
-// };
-
 void main(List<String> args) {
   exitCode = 0;
   print('--- FIGHTBOAT ---');
@@ -19,77 +15,74 @@ void main(List<String> args) {
   var game = Game();
   var agent = Agent();
 
-  var autoBoatSetUp = askForAutoBoatSetup();
+  var autoBoatSetup = askForAutoBoatSetup();
 
   while (!game.isSetUp()) {
-    var nextBoatNumber = game.board1.getBoats().length + 1;
-    var playerOneBoat;
-    if (!autoBoatSetUp) {
-      playerOneBoat = enterNewBoatForPlayer(Player.one, nextBoatNumber);
-    } else {
-      var mockEntry = mockBoatEntries[nextBoatNumber - 1];
-      List<Coords> edges = parseRangeInput(mockEntry);
-      playerOneBoat = Boat.fromRange(edges[0], edges[1]);
-    }
-    game.addBoat(playerOneBoat, Player.one);
-
-    nextBoatNumber = game.board2.getBoats().length + 1;
-    var agentBoat = getNextAgentBoat(agent, nextBoatNumber);
-    game.addBoat(agentBoat, Player.two);
+    addPlayerBoat(game, autoBoatSetup);
+    addAgentBoat(game, agent);
   }
 
-  game.startGame();
+  game.start();
 
   while (!game.isOver()) {
-    var player = game.currentPlayerTurn;
-
-    if (player == Player.one) {
-      print('Opponent Board:');
-      printBoard(board: game.board2, showBoats: false);
-
-      sleep(Duration(seconds: 1));
-
-      print('Your Board:');
-      printBoard(board: game.board1);
-    }
-
-    print(player == Player.one ? 'Player One' : 'Player Two');
-
-    if (player == Player.one) {
-      print('Opponent Board:');
-      printBoard(board: game.board2, showBoats: false);
-      print('Your Board:');
-      printBoard(board: game.board1);
-    }
-
-    var target;
-    var targetAlphaNumeric;
-    if (player == Player.one) {
-      target = getTargetCoords();
-    } else {
-      target = agent.getNextShot();
-    }
-
-    targetAlphaNumeric = convertCoordsToAlphaNumeric(target);
-    stdout.write('Fires at $targetAlphaNumeric... ');
-
-    var result = game.doTurn(target);
-    if (player == Player.two) {
-      agent.reportResult(result);
-    }
-
-    sleep(Duration(milliseconds: 500));
-
-    if (result == Status.hit) {
-      stdout.writeln('HIT');
-    } else if (result == Status.miss) {
-      stdout.writeln('MISS');
-    }
-    stdout.writeln();
-
-    sleep(Duration(seconds: 1));
+    runNextTurn(game, agent);
+    checkForWinner(game);
   }
 
+  exit(exitCode);
+}
+
+void runNextTurn(Game game, Agent agent) {
+  var player = game.currentPlayerTurn;
+
+  if (player == Player.one) {
+    print('Opponent Board:');
+    printBoard(board: game.board2, showBoats: false);
+
+    sleep(Duration(seconds: 1));
+
+    print('Your Board:');
+    printBoard(board: game.board1);
+  }
+
+  print(player == Player.one ? 'Player One' : 'Player Two');
+
+  if (player == Player.one) {
+    print('Opponent Board:');
+    printBoard(board: game.board2, showBoats: false);
+    print('Your Board:');
+    printBoard(board: game.board1);
+  }
+
+  var target;
+  var targetAlphaNumeric;
+  if (player == Player.one) {
+    target = getTargetCoords();
+  } else {
+    target = agent.getNextShot();
+  }
+
+  targetAlphaNumeric = convertCoordsToAlphaNumeric(target);
+  stdout.write('Fires at $targetAlphaNumeric... ');
+
+  var result = game.doTurn(target);
+  if (player == Player.two) {
+    agent.reportResult(result);
+  }
+
+  sleep(Duration(milliseconds: 500));
+
+  if (result == Status.hit) {
+    stdout.writeln('HIT');
+  } else if (result == Status.miss) {
+    stdout.writeln('MISS');
+  }
+  stdout.writeln();
+
+  sleep(Duration(seconds: 1));
+}
+
+void checkForWinner(Game game) {
   var winner = game.getWinner();
   print(game);
   if (winner == Player.one) {
@@ -97,8 +90,27 @@ void main(List<String> args) {
   } else {
     print('You lose.');
   }
+}
 
-  exit(exitCode);
+addPlayerBoat(Game game, bool autoBoatSetup) {
+  var nextBoatNumber = game.board1.getBoats().length + 1;
+  var playerOneBoat;
+
+  if (!autoBoatSetup) {
+    playerOneBoat = enterNewBoatForPlayer(Player.one, nextBoatNumber);
+  } else {
+    var mockEntry = mockBoatEntries[nextBoatNumber - 1];
+    List<Coords> edges = parseRangeInput(mockEntry);
+    playerOneBoat = Boat.fromRange(edges[0], edges[1]);
+  }
+
+  game.addBoat(playerOneBoat, Player.one);
+}
+
+addAgentBoat(Game game, Agent agent) {
+  var nextBoatNumber = game.board2.getBoats().length + 1;
+  var agentBoat = getNextAgentBoat(agent, nextBoatNumber);
+  game.addBoat(agentBoat, Player.two);
 }
 
 /// Create a Boat for a given player, with the location determined by a user
