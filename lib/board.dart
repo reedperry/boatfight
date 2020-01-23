@@ -29,8 +29,28 @@ const rowLabelsByCoord = {
 
 const columnCount = 10;
 
-/// Possible status for a space on the board
-enum Status { boat, empty, hit, miss }
+/// A current status of single a space on the board
+/// TODO This doesn't quite make sense, e.g. boat and hit depend on which
+/// player is reading the status. Maybe split this up or make it clearer.
+enum SpaceStatus { boat, empty, hit, miss }
+
+/// Possible types of invalid shots
+enum Violation { duplicate, outOfBounds, unknown }
+
+class ShotResult {
+  Coords coords;
+  SpaceStatus status;
+  Violation violation;
+  bool boatSunk;
+  bool legalShot;
+
+  ShotResult(this.coords) {
+    status = null;
+    boatSunk = null;
+    legalShot = null;
+    violation = null;
+  }
+}
 
 class Board {
   List<Shot> _shots;
@@ -63,20 +83,33 @@ class Board {
 
   /// Add a new shot to a board at the given coordinates.
   /// Returns the result of the shot.
-  Status addShot(Coords coords) {
+  ShotResult addShot(Coords coords) {
+    var result = ShotResult(coords);
+
     if (hasShotAtCoords(coords)) {
-      throw Exception('A shot is already present at $coords');
+      result.legalShot = false;
+      result.violation = Violation.duplicate;
+    } else {
+      result.legalShot = true;
     }
 
     var boat = getBoatAtCoords(coords);
     if (boat != null) {
       boat.hitAt(coords);
-      _shots.add(Shot(coords, Status.hit));
-      return Status.hit;
+      _shots.add(Shot(coords, SpaceStatus.hit));
+
+      result
+        ..boatSunk = boat.isSunk()
+        ..status = SpaceStatus.hit;
     } else {
-      _shots.add(Shot(coords, Status.miss));
-      return Status.miss;
+      _shots.add(Shot(coords, SpaceStatus.miss));
+
+      result
+        ..boatSunk = false
+        ..status = SpaceStatus.miss;
     }
+
+    return result;
   }
 
   bool hasShotAtCoords(Coords coords) {
@@ -122,7 +155,7 @@ class Board {
 /// Shot represents a single shot displayed on the board
 class Shot {
   Coords coords;
-  Status status;
+  SpaceStatus status;
 
   Shot(this.coords, this.status);
 

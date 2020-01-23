@@ -6,6 +6,7 @@ import 'coords.dart';
 /// Agent is a (very) simple opponent to against in a game of FIGHTBOAT
 class Agent {
   Coords lastShot;
+  Coords lastSunk;
   Coords lastHit;
   Coords lastMiss;
   List<Coords> hits = [];
@@ -44,12 +45,15 @@ class Agent {
   }
 
   /// Tell the agent the result of the last shot it made against the opponent.
-  void reportResult(Status result) {
-    if (result == Status.miss) {
+  void reportResult(ShotResult result) {
+    if (result.status == SpaceStatus.miss) {
       lastMiss = lastShot;
       misses.add(lastShot);
-    } else if (result == Status.hit) {
+    } else if (result.status == SpaceStatus.hit) {
       lastHit = lastShot;
+      if (result.boatSunk) {
+        lastSunk = lastShot;
+      }
       hits.add(lastShot);
     }
   }

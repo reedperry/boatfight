@@ -43,9 +43,7 @@ class Game {
     }
   }
 
-  /// TODO Should this result include whether a boat was just sunk? Could figure
-  /// it out in other ways too
-  Status doTurn(Coords target) {
+  ShotResult doTurn(Coords target) {
     var result;
     if (currentPlayerTurn == Player.one) {
       result = board2.addShot(target);
@@ -88,11 +86,11 @@ class Game {
 }
 
 class BoardOverlay {
-  List<List<Status>> spaces;
+  List<List<SpaceStatus>> spaces;
 
   BoardOverlay.fromShots(List<Shot> shots) {
-    var row = List.filled(10, Status.empty);
-    var grid = List<List<Status>>(10);
+    var row = List.filled(10, SpaceStatus.empty);
+    var grid = List<List<SpaceStatus>>(10);
     for (var i = 0; i < rows.keys.length; i++) {
       grid[i] = List.from(row);
     }
@@ -105,15 +103,15 @@ class BoardOverlay {
   }
 
   BoardOverlay.fromBoats(List<Boat> boats) {
-    var row = List.filled(10, Status.empty);
-    var grid = List<List<Status>>(10);
+    var row = List.filled(10, SpaceStatus.empty);
+    var grid = List<List<SpaceStatus>>(10);
     for (var i = 0; i < rows.keys.length; i++) {
       grid[i] = List.from(row);
     }
 
     for (var boat in boats) {
       for (var space in boat.getLocations()) {
-        grid[space.row][space.col] = Status.boat;
+        grid[space.row][space.col] = SpaceStatus.boat;
       }
     }
 

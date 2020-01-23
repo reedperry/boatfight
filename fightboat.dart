@@ -73,9 +73,13 @@ void runNextTurn(Game game, Agent agent) {
 
   sleep(Duration(milliseconds: 500));
 
-  if (result == Status.hit) {
-    stdout.writeln('HIT');
-  } else if (result == Status.miss) {
+  if (result.status == SpaceStatus.hit) {
+    var msg = 'HIT';
+    if (result.boatSunk) {
+      msg += ' - SUNK';
+    }
+    stdout.writeln(msg);
+  } else if (result.status == SpaceStatus.miss) {
     stdout.writeln('MISS');
   }
   stdout.writeln();
@@ -182,11 +186,11 @@ void printBoard({Board board, bool showBoats = true}) {
     var rowLetter = rows.keys.elementAt(row);
     stdout.write(rowLetter + '|');
     for (int col = 0; col < columnCount; col++) {
-      if (shots.spaces[row][col] == Status.hit) {
+      if (shots.spaces[row][col] == SpaceStatus.hit) {
         stdout.write('X|');
-      } else if (shots.spaces[row][col] == Status.miss) {
+      } else if (shots.spaces[row][col] == SpaceStatus.miss) {
         stdout.write('+|');
-      } else if (boats != null && boats.spaces[row][col] == Status.boat) {
+      } else if (boats != null && boats.spaces[row][col] == SpaceStatus.boat) {
         stdout.write('O|');
       } else {
         stdout.write('_|');
