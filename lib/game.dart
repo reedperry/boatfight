@@ -44,12 +44,18 @@ class Game {
   }
 
   ShotResult doTurn(Coords target) {
-    var result;
+    ShotResult result;
     if (currentPlayerTurn == Player.one) {
       result = board2.addShot(target);
+      if (!result.legalShot) {
+        return result;
+      }
       currentPlayerTurn = Player.two;
     } else {
       result = board1.addShot(target);
+      if (!result.legalShot) {
+        return result;
+      }
       currentPlayerTurn = Player.one;
     }
     return result;

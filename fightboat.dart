@@ -48,13 +48,6 @@ void runNextTurn(Game game, Agent agent) {
 
   print(player == Player.one ? 'Player One' : 'Player Two');
 
-  if (player == Player.one) {
-    print('Opponent Board:');
-    printBoard(board: game.board2, showBoats: false);
-    print('Your Board:');
-    printBoard(board: game.board1);
-  }
-
   var target;
   var targetAlphaNumeric;
   if (player == Player.one) {
@@ -64,9 +57,19 @@ void runNextTurn(Game game, Agent agent) {
   }
 
   targetAlphaNumeric = convertCoordsToAlphaNumeric(target);
-  stdout.write('Fires at $targetAlphaNumeric... ');
 
   var result = game.doTurn(target);
+  if (!result.legalShot) {
+    if (result.violation == Violation.duplicate) {
+      stdout.write('Illegal shot. Already fired at $targetAlphaNumeric...');
+    } else {
+      stdout.write('Illegal shot.');
+    }
+    return;
+  }
+
+  stdout.write('Fires at $targetAlphaNumeric... ');
+
   if (player == Player.two) {
     agent.reportResult(result);
   }
@@ -76,7 +79,7 @@ void runNextTurn(Game game, Agent agent) {
   if (result.status == SpaceStatus.hit) {
     var msg = 'HIT';
     if (result.boatSunk) {
-      msg += ' - SUNK';
+      msg += ' - SUNK! Boat length: ${result.sunkBoatLength}';
     }
     stdout.writeln(msg);
   } else if (result.status == SpaceStatus.miss) {
@@ -84,7 +87,7 @@ void runNextTurn(Game game, Agent agent) {
   }
   stdout.writeln();
 
-  sleep(Duration(seconds: 1));
+  sleep(Duration(milliseconds: 500));
 }
 
 void finishGame(Game game) {

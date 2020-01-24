@@ -11,6 +11,7 @@ class Agent {
   Coords lastMiss;
   List<Coords> hits = [];
   List<Coords> misses = [];
+  List<int> sunkBoatLengths = [];
 
   /// Return the start and end point edges of a boat to add to the board.
   /// boatNumber is the 1-based number of the boat being added.
@@ -29,8 +30,8 @@ class Agent {
   Coords getNextShot() {
     Coords shot;
     while (shot == null) {
-      if (_lastShotHit()) {
-        shot = _followLastHit();
+      if (_lastShotHit() && !_lastShotSunkBoat()) {
+        shot = _followLastHitOnUnsunkBoat();
       } else {
         shot = _selectRandomShot();
       }
@@ -53,6 +54,7 @@ class Agent {
       lastHit = lastShot;
       if (result.boatSunk) {
         lastSunk = lastShot;
+        sunkBoatLengths.add(result.sunkBoatLength);
       }
       hits.add(lastShot);
     }
@@ -64,12 +66,16 @@ class Agent {
   }
 
   /// Select the next shot when the last shot was a hit.
-  Coords _followLastHit() {
+  Coords _followLastHitOnUnsunkBoat() {
+    // 'up' meaning top of the board as we see it
+    var canMoveUp = !_isFirstRow(lastHit);
+    var canMoveDown = !_isLastRow(lastHit);
+    var canMoveRight = !_isLastColumn(lastHit);
+    var canMoveLeft = !_isFirstColumn(lastHit);
+
     var moveVertical = Random().nextBool();
+
     if (moveVertical) {
-      // 'up' meaning top of the board as we see it
-      var canMoveUp = lastHit.row > 0;
-      var canMoveDown = lastHit.row < 9;
       var moveUp = canMoveUp && Random().nextBool();
       if (moveUp) {
         return Coords(lastHit.row - 1, lastHit.col);
@@ -80,8 +86,6 @@ class Agent {
         return _selectRandomShot();
       }
     } else {
-      var canMoveRight = lastHit.col < 9;
-      var canMoveLeft = lastHit.col > 0;
       var moveRight = canMoveRight && Random().nextBool();
       if (moveRight) {
         return Coords(lastHit.row, lastHit.col + 1);
@@ -93,6 +97,22 @@ class Agent {
     }
   }
 
+  bool _isLastColumn(Coords coords) {
+    return coords.col == 9;
+  }
+
+  bool _isFirstColumn(Coords coords) {
+    return coords.col == 0;
+  }
+
+  bool _isLastRow(Coords coords) {
+    return coords.row == 9;
+  }
+
+  bool _isFirstRow(Coords coords) {
+    return coords.row == 0;
+  }
+
   /// Determine if the agent has already fired at a given set of Coords.
   bool _alreadyFiredAt(Coords shot) {
     return misses.contains(shot) || hits.contains(shot);
@@ -101,5 +121,9 @@ class Agent {
   /// Determine if the agent's last shot resulted in a hit.
   bool _lastShotHit() {
     return lastHit != null && lastShot == lastHit;
+  }
+
+  bool _lastShotSunkBoat() {
+    return lastSunk != null && lastSunk == lastHit;
   }
 }

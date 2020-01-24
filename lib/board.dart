@@ -30,7 +30,7 @@ const rowLabelsByCoord = {
 const columnCount = 10;
 
 /// A current status of single a space on the board
-/// TODO This doesn't quite make sense, e.g. boat and hit depend on which
+/// TODO This doesn't quite make sense, e.g. boat vs hit depends on which
 /// player is reading the status. Maybe split this up or make it clearer.
 enum SpaceStatus { boat, empty, hit, miss }
 
@@ -42,11 +42,13 @@ class ShotResult {
   SpaceStatus status;
   Violation violation;
   bool boatSunk;
+  int sunkBoatLength;
   bool legalShot;
 
   ShotResult(this.coords) {
     status = null;
     boatSunk = null;
+    sunkBoatLength = null;
     legalShot = null;
     violation = null;
   }
@@ -100,6 +102,7 @@ class Board {
 
       result
         ..boatSunk = boat.isSunk()
+        ..sunkBoatLength = boat.isSunk() ? boat.getLength() : null
         ..status = SpaceStatus.hit;
     } else {
       _shots.add(Shot(coords, SpaceStatus.miss));
