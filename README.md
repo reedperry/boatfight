@@ -1,4 +1,4 @@
-# FIGHTBOAT
+# BOATFIGHT
 10 boats enter. Fewer leave.
 
 This is a simple clone of a popular ship battle game.
@@ -9,7 +9,7 @@ To play it in its current state, you need to install the Dart VM, which comes wi
 
 Clone this repository, and from the root directory, run:
 ```
-dart fightboat.dart
+dart boatfight.dart
 ```
 
 

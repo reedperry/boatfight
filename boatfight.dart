@@ -10,7 +10,7 @@ import 'test/mockdata.dart';
 
 void main(List<String> args) {
   exitCode = 0;
-  print('--- FIGHTBOAT ---');
+  print('--- BOATFIGHT ---');
 
   var game = Game();
   var agent = Agent();

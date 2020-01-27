@@ -3,7 +3,7 @@ import 'dart:math';
 import 'board.dart';
 import 'coords.dart';
 
-/// Agent is a (very) simple opponent to against in a game of FIGHTBOAT
+/// Agent is a (very) simple opponent to against in a game of BOATFIGHT
 class Agent {
   Coords lastShot;
   Coords lastSunk;
